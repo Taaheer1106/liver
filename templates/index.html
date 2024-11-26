@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liver Disease Prediction</title>
+    <style>
+        /* Reset some default styles */
+        body, h1, h2, p, form {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .prediction-form {
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        form input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+       form select{
+            width: 102%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius:3px;}
+        form button {
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Liver Disease Prediction</h1>
+    </header>
+    <main>
+        <div class="prediction-form">
+            <form action="/predict" method="POST">
+                <label for="Age">Age:</label>
+                <input type="number" id="Age" name="Age" required><br>
+
+                <label for="Gender">Gender:</label>
+                <select id="Gender" name="Gender">
+                    <option value="0">Female</option>
+                    <option value="1">Male</option>
+                </select><br>
+
+                <label for="AlcoholIntake">Alcohol Intake:</label>
+                <select id="AlcoholIntake" name="AlcoholIntake">
+                    <option value="0">No Intake</option>
+                    <option value="1">Low Intake</option>                
+                    <option value="2">Moderate Intake</option>
+                    <option value="3">High Intake</option>
+                    <option value="4">Very High Intake</option>
+                </select><br>
+                <label for="BMI">Body Mass:</label>
+                <input type="text" id="BMI" name="BMI" required><br>
+
+                <label for="DrugUse">Drug Usage:</label>
+                <select id="DrugUse" name="DrugUse">
+                    <option value="0">NO</option>
+                    <option value="1">YES</option>
+                </select><br>
+
+                <label for="SmokingStatus">Smoking Status:</label>
+                <select id="SmokingStatus" name="SmokingStatus">
+                    <option value="0">Non-smoker</option>
+                    <option value="1">Former smoker</option>
+                    <option value="2">Smoker</option>
+                </select><br>
+
+                <label for="StressLevels">Stress Levels:</label>
+                <select id="StressLevels" name="StressLevels">
+                    <option value="0">Low</option>
+                    <option value="2">High</option>
+                    <option value="1">Average</option>
+                </select><br>
+
+                <input type="submit" value="Predict">
+            </form>
+        </div>
+    </main>
+    <footer>
+         liver disease prediction 
+    </footer>
+</body>
+</html>

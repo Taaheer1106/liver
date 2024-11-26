@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LIVER DISEASE PREDICTION</title>
+    <style>
+        body {
+            background-image: url("{{url_for('static', filename='background.jpg')}}");
+            
+            font-family: Arial, sans-serif;
+            background-color: #e5e7e3;
+            padding: 0;
+            text-align: center;
+        }
+        p {
+            color: #666;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <center>
+        <h1>LIVER DISEASE PREDICTION</h1>
+    </center>
+
+    <hr size="3" color="black">
+    <table width="90%">
+        <tr>
+            <td><a href="{{url_for('home')}}">HOME</a></td>
+            <td><a href="{{url_for('index')}}">PREDICTION FORM</a></td>
+            <td><a href="{{url_for('instruction')}}">INSTRUCTIONS</a></td>
+            <td><a href="{{url_for('about')}}">ABOUT</a></td>
+            <td><a href="{{url_for('feedback')}}">FEEDBACK</a></td>
+        </tr>
+    </table>
+
+    <img src="{{url_for('static',filename='image.png')}}" alt="Liver Image"
+        align="center" width="400" height="300">
+    <hr size="3" color="white">
+    <marquee style="color:rgb(238, 234, 234)" width="100%" direction="right" bgcolor="green" height="20px">LIVER DISEASE PREDICTION</marquee>
+    <h1>Welcome to Liver Disease Prediction</h1>
+    <p>This website is dedicated to helping you predict the likelihood of liver disease based on your health data.</p>
+    
+
+</body>
+
+</html>

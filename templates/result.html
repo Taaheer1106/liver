@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liver Disease Prediction Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0e1dd;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            font-size: 28px;
+        }
+        a {
+            display: block;
+            margin-top: 20px;
+            text-decoration: underline;
+            color: #4219cb;
+        }
+        .header-image {
+            display: block;
+            margin: 0 auto;
+            width: 300px; /* Adjust the width as needed */
+        }
+        /* Style for the prediction text */
+        .prediction-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: hsl(208, 100%, 60%); /* Change the color to your preference */
+        }
+    </style>
+    <marquee style="color:white" width="100%" direction="right" bgcolor="green" height="20px">  LIVER DISEASE PREDICTION </marquee>
+</head>
+<body>
+    <img class="header-image" src="https://th.bing.com/th/id/R.db0de5e05ffc18771a564aa493829b0f?rik=05UPqDHKkdIy0Q&riu=http%3a%2f%2fpeoplebeatingcancer.org%2fwp-content%2fuploads%2f2018%2f04%2fliver-image.jpg&ehk=LCvPnT7yVBVgYyhHE1e2dWRXufNYFr86oO5UsM9E%2fSs%3d&risl=&pid=ImgRaw&r=0" alt="Header Image">
+    <table width="100%">
+        <tr>
+        <td><a href="/">Home</a></td>
+        <td><a href="{{url_for('index')}}">prediction form </a></td>
+        
+        <td><a href="{{url_for('feedback')}}">Feedback</a></td>
+    </tr>
+    </table>
+    {% if prediction_text == "No Liver Disease Detected" %}
+    <p class="prediction-text" style="background-color: white;">{{ prediction_text }}</p>
+    <img src="{{url_for('static',filename='image1.png')}}" alt="Healthy Liver Image" style="width: 50%; height: auto; margin: 20px;">
+
+    <p style="text-align: left;">Instructions:</p>
+    <p style="text-align: left; width: 100%; background-color: white; padding: 10px;">Based on the current assessment, no liver disease has been detected. However, it is essential to maintain a healthy lifestyle and continue regular medical check-ups to ensure ongoing liver health.</p>
+    {% else %}
+    <p class="prediction-text" style="background-color: white;">{{ prediction_text }}</p>
+    <img src="{{url_for('static',filename='image2.png')}}" alt="Healthy Liver Image" style="width: 50%; height: auto; margin: 20px;">
+
+    <p style="text-align: left;">Instructions:</p>
+    <p style="text-align: left;  width: 100%; background-color: white; padding: 10px;"> Please monitor this individual for any signs or symptoms of liver disease and conduct regular liver function tests.
+        It is highly recommended to consult a doctor for further evaluation and guidance.</p>
+    {% endif %}
+
+</body>
+</html>
