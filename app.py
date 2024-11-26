@@ -85,39 +85,41 @@ def generate_pdf(pdf_path, user_data):
 @app.route('/predict', methods=['POST', 'GET'])
 def predict():
     if request.method == 'POST':
-        # Get user input from the form
-        Age = float(request.form['Age'])
-        Gender = int(request.form['Gender'])
-        AlcoholIntake = float(request.form['AlcoholIntake'])
-        BMI = float(request.form['BMI'])
-        DrugUse = int(request.form['DrugUse'])
-        SmokingStatus = float(request.form['SmokingStatus'])
-        StressLevels = float(request.form['StressLevels'])
-        
-        # Preprocess the user input
-        input_data = np.array([Age, Gender, AlcoholIntake, BMI, DrugUse, SmokingStatus, StressLevels]).reshape(1, -1)
-
-        # Make a prediction using the loaded SVM model
-        prediction = model.predict(input_data)
-
-        # Determine the prediction text
-        if prediction[0] == 1:
-            prediction_text = "Liver Disease Detected"
-        else:
-            prediction_text = "No Liver Disease Detected"
-
-        # Save the user input and prediction to PostgreSQL
-        cursor.execute('''
-            INSERT INTO liverpre (age, gender, alcohol_intake, bmi, drug_use, smoking_status, stress_levels, prediction)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        ''', (Age, Gender, AlcoholIntake, BMI, DrugUse, SmokingStatus, StressLevels, prediction_text))
-        conn.commit()
-
         try:
+            # Get user input from the form
+            Age = float(request.form['Age'])
+            Gender = int(request.form['Gender'])
+            AlcoholIntake = float(request.form['AlcoholIntake'])
+            BMI = float(request.form['BMI'])
+            DrugUse = int(request.form['DrugUse'])
+            SmokingStatus = float(request.form['SmokingStatus'])
+            StressLevels = float(request.form['StressLevels'])
+
+            # Preprocess the user input
+            input_data = np.array([Age, Gender, AlcoholIntake, BMI, DrugUse, SmokingStatus, StressLevels]).reshape(1, -1)
+
+            # Make a prediction using the loaded SVM model
+            prediction = model.predict(input_data)
+
+            # Determine the prediction text
+            prediction_text = "Liver Disease Detected" if prediction[0] == 1 else "No Liver Disease Detected"
+
+            # Save the user input and prediction to PostgreSQL
+            # Use a 'with' statement to ensure the cursor is properly closed
+            with conn.cursor() as cursor:
+                cursor.execute('''
+                    INSERT INTO liverpre (age, gender, alcohol_intake, bmi, drug_use, smoking_status, stress_levels, prediction)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                ''', (Age, Gender, AlcoholIntake, BMI, DrugUse, SmokingStatus, StressLevels, prediction_text))
+                conn.commit()
+
             return render_template('result.html', prediction_text=prediction_text)
+
         except Exception as e:
+            # Handle any unexpected exceptions
             print(f"Error: {str(e)}")
-            return "An error occurred while making predictions."
+            return "An error occurred while processing your request."
+
 
 if __name__ == '__main__':
     app.run(port=os.getenv('PORT', 5000), debug=True)
