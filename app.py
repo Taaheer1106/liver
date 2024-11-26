@@ -2,47 +2,52 @@ import os
 import pickle
 import numpy as np
 import psycopg2
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, redirect, url_for
 from reportlab.pdfgen import canvas
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
 load_dotenv()
-app = Flask(__name__)
 
+app = Flask(__name__)
 
 # Load the trained machine learning model
 with open('taaheer.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
 
-# Connect to PostgreSQL
-conn = psycopg2.connect(
-    dbname=os.getenv('DB_NAME'),
-    user=os.getenv('DB_USER'),  
-    password=os.getenv('DB_PASSWORD'),  
-    host=os.getenv('DB_HOST'), 
-
-# PGHOST='ep-jolly-king-a5acsqms.us-east-2.aws.neon.tech'
-# PGDATABASE='neondb'
-# PGUSER='neondb_owner'
-# PGPASSWORD='Upl5sINQ8uad'
-)
-cursor = conn.cursor()
-
-# Ensure the table exists
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS liverpre (
-        id SERIAL PRIMARY KEY,
-        age FLOAT,
-        gender INT,
-        alcohol_intake FLOAT,
-        bmi FLOAT,
-        drug_use INT,
-        smoking_status FLOAT,
-        stress_levels FLOAT,
-        prediction TEXT
+# Function to establish a database connection
+def get_db_connection():
+    conn = psycopg2.connect(
+        dbname=os.getenv('DB_NAME'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        host=os.getenv('DB_HOST')
     )
-''')
-conn.commit()
+    return conn
+
+# Create the necessary table if it doesn't exist
+def create_table():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS liverpre (
+            id SERIAL PRIMARY KEY,
+            age FLOAT,
+            gender INT,
+            alcohol_intake FLOAT,
+            bmi FLOAT,
+            drug_use INT,
+            smoking_status FLOAT,
+            stress_levels FLOAT,
+            prediction TEXT
+        )
+    ''')
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+# Call create_table to ensure the table is created when the app starts
+create_table()
 
 @app.route('/')
 def home():
@@ -98,28 +103,30 @@ def predict():
             # Preprocess the user input
             input_data = np.array([Age, Gender, AlcoholIntake, BMI, DrugUse, SmokingStatus, StressLevels]).reshape(1, -1)
 
-            # Make a prediction using the loaded SVM model
+            # Make a prediction using the loaded model
             prediction = model.predict(input_data)
 
             # Determine the prediction text
             prediction_text = "Liver Disease Detected" if prediction[0] == 1 else "No Liver Disease Detected"
 
             # Save the user input and prediction to PostgreSQL
-            # Use a 'with' statement to ensure the cursor is properly closed
-            with conn.cursor() as cursor:
-                cursor.execute('''
-                    INSERT INTO liverpre (age, gender, alcohol_intake, bmi, drug_use, smoking_status, stress_levels, prediction)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                ''', (Age, Gender, AlcoholIntake, BMI, DrugUse, SmokingStatus, StressLevels, prediction_text))
-                conn.commit()
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT INTO liverpre (age, gender, alcohol_intake, bmi, drug_use, smoking_status, stress_levels, prediction)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (Age, Gender, AlcoholIntake, BMI, DrugUse, SmokingStatus, StressLevels, prediction_text))
+            conn.commit()
+            cursor.close()
+            conn.close()
 
+            # Return the result to the user
             return render_template('result.html', prediction_text=prediction_text)
 
         except Exception as e:
             # Handle any unexpected exceptions
             print(f"Error: {str(e)}")
-            return "An error occurred while processing your request."
-
+            return render_template('error.html', error_message="An error occurred while processing your request.")
 
 if __name__ == '__main__':
     app.run(port=os.getenv('PORT', 5000), debug=True)
